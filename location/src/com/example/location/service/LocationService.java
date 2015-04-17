@@ -72,6 +72,8 @@ public class LocationService extends Service{
 			time.setToNow();
 			String currentTime = time.format("%Y-%m-%d %H:%M:%S");
 			
+//			System.out.println(currentTime);
+			
 			//将数据添加进数据库
 			LocationDAO locationDAO = new LocationDAO(LocationService.this);
 			
@@ -80,12 +82,15 @@ public class LocationService extends Service{
 //						calendar.get(Calendar.YEAR) + "-" + calendar.get(Calendar.MONTH)+1 + "-" + calendar.get(Calendar.DAY_OF_MONTH) 
 //							+ " " + calendar.get(Calendar.HOUR_OF_DAY) + ":" + calendar.get(Calendar.MINUTE) + ":" + calendar.get(Calendar.SECOND)
 							);
-			locationDAO.add(locationInfo);
+//			System.out.println(locationInfo.toString());
 			
+			locationDAO.add(locationInfo);
+			System.out.println("This is before put Intent " + locationInfo.toString());
 			//将接收到的数据广播出去用于区域定位以及刷新信息列表
 			Intent intent = new Intent("com.example.location.RECEIVER");
 			intent.putExtra("locationInfo", locationInfo);
 			sendBroadcast(intent);
+			System.out.println("This is after put Intent " + locationInfo.toString());
 			
 /*
 			//获取两个具有经纬度的点的方法：前面四个参数表示两点的经纬度，最后一个float数组，其中float[0]就是我们要的米的结果

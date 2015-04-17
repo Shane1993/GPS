@@ -28,23 +28,23 @@ public class MainActivity extends Activity {
 		tabHost.addTab(tabHost.newTabSpec("person").setIndicator("¼ÇÂ¼").setContent(R.id.locationLayoutId));
 		
 		
-		Intent intent = getIntent();
-		if(intent.hasExtra("msg"))
-		{	
-			switch (intent.getIntExtra("msg", 0)) {
-			case 0:
-				tabHost.setCurrentTab(0);
-				break;
-			case 1:
-				tabHost.setCurrentTab(1);
-			default:
-				break;
-			}
-		}
-		else
-		{
-			System.out.println("Extra is null");
-		}
+//		Intent intent = getIntent();
+//		if(intent.hasExtra("msg"))
+//		{	
+//			switch (intent.getIntExtra("msg", 0)) {
+//			case 0:
+//				tabHost.setCurrentTab(0);
+//				break;
+//			case 1:
+//				tabHost.setCurrentTab(1);
+//			default:
+//				break;
+//			}
+//		}
+//		else
+//		{
+//			System.out.println("Extra is null");
+//		}
 		
 	}
 	

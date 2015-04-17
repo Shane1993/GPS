@@ -172,6 +172,18 @@ public class AreaLocationLayout extends LinearLayout {
 		});
 	}
 
+	
+	
+	@Override
+	protected void onVisibilityChanged(View changedView, int visibility) {
+		// TODO Auto-generated method stub
+		super.onVisibilityChanged(changedView, visibility);
+		if(visibility == View.VISIBLE)
+		{
+			freshList();
+		}
+	}
+
 	private void init() {
 
 		listView = (ListView) findViewById(R.id.areaLocationLv);

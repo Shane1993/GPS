@@ -29,7 +29,10 @@ public class MeasureActivity extends Activity implements OnClickListener{
 	
 	private MsgReceiver msgReceiver;
 	
+	//用来接收GPS传回来的数据
 	private LocationInfo locationInfo;
+	//用来记录每个角落的坐标点
+	private LocationInfo locationInfo1,locationInfo2,locationInfo3,locationInfo4;
 	private AreaLocationInfo areaLocationInfo = new AreaLocationInfo();
 	
 	//设置常量用来便于判断是当前哪个角落需要定位显示
@@ -60,7 +63,13 @@ public class MeasureActivity extends Activity implements OnClickListener{
 		msg = intent.getIntExtra("msg", 0);
 		
 		switch (msg) {
+		//0代表创建区域位置
 		case 0:
+			//初始化
+			locationInfo1 = new LocationInfo();
+			locationInfo2 = new LocationInfo();
+			locationInfo3 = new LocationInfo();
+			locationInfo4 = new LocationInfo();
 			
 			break;
 		//如果是1则说明是通过点击选项进入这个界面的，所以要从数据库中读取相应的数据显示出来
@@ -108,15 +117,23 @@ public class MeasureActivity extends Activity implements OnClickListener{
 			
 			switch (selectKey) {
 			case KEY_ZUOSHANGTV:
+				locationInfo1.setLongitude(locationInfo.getLongitude());
+				locationInfo1.setLatitude(locationInfo.getLatitude());
 				zuoshangTv.setText("经度：" + locationInfo.getLongitude() + "\n纬度：" + locationInfo.getLatitude());
 				break;
 			case KEY_YOUSHANGTV:
+				locationInfo2.setLongitude(locationInfo.getLongitude());
+				locationInfo2.setLatitude(locationInfo.getLatitude());
 				youshangTv.setText("经度：" + locationInfo.getLongitude() + "\n纬度：" + locationInfo.getLatitude());			
 				break;
 			case KEY_ZUOXIATV:
+				locationInfo3.setLongitude(locationInfo.getLongitude());
+				locationInfo3.setLatitude(locationInfo.getLatitude());
 				zuoxiaTv.setText("经度：" + locationInfo.getLongitude() + "\n纬度：" + locationInfo.getLatitude());
 				break;
 			case KEY_YOUXIATV:
+				locationInfo4.setLongitude(locationInfo.getLongitude());
+				locationInfo4.setLatitude(locationInfo.getLatitude());
 				youxiaTv.setText("经度：" + locationInfo.getLongitude() + "\n纬度：" + locationInfo.getLatitude());
 				break;
 			default:
@@ -313,14 +330,14 @@ public class MeasureActivity extends Activity implements OnClickListener{
 				AreaLocationDAO areaLocationDAO = new AreaLocationDAO(MeasureActivity.this);
 				//使用最新的数据
 				areaLocationInfo.setName(locationNameEt.getText().toString());
-				areaLocationInfo.setLongitude1(locationInfo.getLongitude());
-				areaLocationInfo.setLatitude1(locationInfo.getLatitude());
-				areaLocationInfo.setLongitude2(locationInfo.getLongitude());
-				areaLocationInfo.setLatitude2(locationInfo.getLatitude());
-				areaLocationInfo.setLongitude3(locationInfo.getLongitude());
-				areaLocationInfo.setLatitude3(locationInfo.getLatitude());
-				areaLocationInfo.setLongitude4(locationInfo.getLongitude());
-				areaLocationInfo.setLatitude4(locationInfo.getLatitude());
+				areaLocationInfo.setLongitude1(locationInfo1.getLongitude());
+				areaLocationInfo.setLatitude1(locationInfo1.getLatitude());
+				areaLocationInfo.setLongitude2(locationInfo2.getLongitude());
+				areaLocationInfo.setLatitude2(locationInfo2.getLatitude());
+				areaLocationInfo.setLongitude3(locationInfo3.getLongitude());
+				areaLocationInfo.setLatitude3(locationInfo3.getLatitude());
+				areaLocationInfo.setLongitude4(locationInfo4.getLongitude());
+				areaLocationInfo.setLatitude4(locationInfo4.getLatitude());
 				
 				switch (msg) {
 				//如果是0则说明现在是创建数据
@@ -343,10 +360,10 @@ public class MeasureActivity extends Activity implements OnClickListener{
 				//退出时记得注销这个Activity的接收器
 				unregisterReceiver(msgReceiver);
 				
-				Intent intent = new Intent(MeasureActivity.this,MainActivity.class);
-				//设置携带数据，为了能在确定时启动的是Mainactivity中Tab中的第二个界面
-				intent.putExtra("msg", 1);
-				startActivity(intent);
+//				Intent intent = new Intent(MeasureActivity.this,MainActivity.class);
+//				//设置携带数据，为了能在确定时启动的是Mainactivity中Tab中的第二个界面
+//				intent.putExtra("msg", 1);
+//				startActivity(intent);
 				//跳转界面后也要把这个界面关闭掉
 				finish();
 				

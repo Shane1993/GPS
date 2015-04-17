@@ -40,6 +40,7 @@ public class LocationDAO {
 	public void add(LocationInfo locationInfo)
 	{
 		db = helper.getWritableDatabase();
+//		System.out.println("This is add" + locationInfo.toString());
 		db.execSQL("insert into person (id,longitude,latitude,speed,time) values (?,?,?,?,?)",
 		new Object[]{locationInfo.getid(),locationInfo.getLongitude(),locationInfo.getLatitude(),
 				locationInfo.getSpeed(),locationInfo.getTime()
@@ -132,7 +133,7 @@ public class LocationDAO {
 					cursor.getDouble(cursor.getColumnIndex("longitude")), 
 					cursor.getDouble(cursor.getColumnIndex("latitude")), 
 					cursor.getFloat(cursor.getColumnIndex("speed")), 
-					cursor.getString(cursor.getColumnIndex("speed"))));
+					cursor.getString(cursor.getColumnIndex("time"))));
 		}
 		
 		return infoList;
