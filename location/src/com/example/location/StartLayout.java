@@ -10,11 +10,9 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 import cn.bmob.v3.Bmob;
-import cn.bmob.v3.BmobQuery;
 
 import com.example.location.database.AreaLocationDAO;
 import com.example.location.database.LocationDAO;
-import com.example.location.model.LocationInfo;
 import com.example.location.service.LocationService;
 import com.example.location.service.SendDataServer;
 
@@ -78,6 +76,7 @@ public class StartLayout extends LinearLayout {
 			}
 
 		});
+		
 		
 	}
 	

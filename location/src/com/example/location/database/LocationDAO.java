@@ -41,9 +41,9 @@ public class LocationDAO {
 	{
 		db = helper.getWritableDatabase();
 //		System.out.println("This is add" + locationInfo.toString());
-		db.execSQL("insert into person (id,longitude,latitude,speed,time) values (?,?,?,?,?)",
+		db.execSQL("insert into person (id,longitude,latitude,speed,time,areaname) values (?,?,?,?,?,?)",
 		new Object[]{locationInfo.getid(),locationInfo.getLongitude(),locationInfo.getLatitude(),
-				locationInfo.getSpeed(),locationInfo.getTime()
+				locationInfo.getSpeed(),locationInfo.getTime(),locationInfo.getAreaName()
 				});
 	}
 	
@@ -56,10 +56,10 @@ public class LocationDAO {
 	{
 		db = helper.getWritableDatabase();
 		db.execSQL("update person set longitude = ?,latitude = ?,"
-				+ "speed = ?,time = ? where id = ?",
+				+ "speed = ?,time = ? areaname = ? where id = ?",
 		new Object[]{locationInfo.getLongitude(),locationInfo.getLatitude(),
 						locationInfo.getSpeed(),locationInfo.getTime(),
-						locationInfo.getid()});
+						locationInfo.getAreaName(),locationInfo.getid()});
 	}
 	
 	/**
@@ -71,7 +71,7 @@ public class LocationDAO {
 	{
 		db = helper.getWritableDatabase();
 		Cursor cursor = db.rawQuery("select id, longitude, latitude, speed,"
-				+ "time from person where id = ?",
+				+ "time, areaname from person where id = ?",
 		new String[]{String.valueOf(id)});
 		
 		if(cursor.moveToNext())
@@ -81,7 +81,8 @@ public class LocationDAO {
 					cursor.getDouble(cursor.getColumnIndex("longitude")), 
 					cursor.getDouble(cursor.getColumnIndex("latitude")), 
 					cursor.getFloat(cursor.getColumnIndex("speed")), 
-					cursor.getString(cursor.getColumnIndex("speed")));
+					cursor.getString(cursor.getColumnIndex("time")),
+					cursor.getString(cursor.getColumnIndex("areaname")));
 		}
 		
 		return null;
@@ -133,7 +134,8 @@ public class LocationDAO {
 					cursor.getDouble(cursor.getColumnIndex("longitude")), 
 					cursor.getDouble(cursor.getColumnIndex("latitude")), 
 					cursor.getFloat(cursor.getColumnIndex("speed")), 
-					cursor.getString(cursor.getColumnIndex("time"))));
+					cursor.getString(cursor.getColumnIndex("time")),
+					cursor.getString(cursor.getColumnIndex("areaname"))));
 		}
 		
 		return infoList;

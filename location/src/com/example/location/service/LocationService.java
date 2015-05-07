@@ -1,5 +1,7 @@
 package com.example.location.service;
 
+import java.util.List;
+
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -10,7 +12,9 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.text.format.Time;
 
+import com.example.location.database.AreaLocationDAO;
 import com.example.location.database.LocationDAO;
+import com.example.location.model.AreaLocationInfo;
 import com.example.location.model.LocationInfo;
 
 public class LocationService extends Service{
@@ -29,14 +33,13 @@ public class LocationService extends Service{
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		// TODO Auto-generated method stub
-		//要新建一个线程来完成任务
 		
 		//创建LocationManager对象并获取系统的定位服务，注意向下转型
 		locationManager = (LocationManager) LocationService.this.getSystemService(Context.LOCATION_SERVICE);
 		//设置定位方式为GPS，时间更新的最小时间间隔(意思是多长时间更新用户的位置，单位是毫秒)，
 		//两次定位之间的最小位移(意思是触发更新定位所需的最小位移，单位是米)，绑定定位监听器（在接口重写方法里面获取位置）
 		//注：对于追踪用户的位置关键就是看中间那两个参数，即更新的最小时间间隔和最小位移
-		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,5000,5000,new TestLocationListener());
+		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,5000,5,new TestLocationListener());
 
 		System.out.println("Service is started");
 		
@@ -73,15 +76,15 @@ public class LocationService extends Service{
 			String currentTime = time.format("%Y-%m-%d %H:%M:%S");
 			
 //			System.out.println(currentTime);
+			double longitude = location.getLongitude();
+			double latitude = location.getLatitude();
+			String areaName = getAreaName(longitude,latitude);
 			
 			//将数据添加进数据库
 			LocationDAO locationDAO = new LocationDAO(LocationService.this);
 			
 			locationInfo = new LocationInfo( locationDAO.getMaxId() + 1 , location.getLongitude(), location.getLatitude(), 
-						location.getSpeed(), currentTime
-//						calendar.get(Calendar.YEAR) + "-" + calendar.get(Calendar.MONTH)+1 + "-" + calendar.get(Calendar.DAY_OF_MONTH) 
-//							+ " " + calendar.get(Calendar.HOUR_OF_DAY) + ":" + calendar.get(Calendar.MINUTE) + ":" + calendar.get(Calendar.SECOND)
-							);
+						location.getSpeed(), currentTime, areaName);
 //			System.out.println(locationInfo.toString());
 			
 			locationDAO.add(locationInfo);
@@ -102,11 +105,57 @@ public class LocationService extends Service{
 
 */
 			
-			//关闭服务
-			LocationService.this.stopSelf();
+//			//关闭服务
+//			LocationService.this.stopSelf();
 		}
+
 		
 	}
+	
+	//根据经纬度判断所处区域
+	private String getAreaName(double longitude, double latitude) {
+		// TODO Auto-generated method stub
+		AreaLocationDAO areaLocationDAO = new AreaLocationDAO(LocationService.this);
+		//记录最小和最大的经度还有最小和最大的纬度
+		double minLongitude = 0.0, maxLongitude = 0.0;
+		double minLatitude = 0.0, maxLatitude = 0.0;
+		
+		List<AreaLocationInfo> list = areaLocationDAO.getScrollData(0, (int)areaLocationDAO.getCount());
+		//用for循环遍历列表，一个个查询该位置是不是处于该区域内
+		for(AreaLocationInfo info : list)
+		{
+			//提取最小的经度
+			double minLongitude12 = Math.min(info.getLongitude1(), info.getLongitude2());
+			double minLongitude34 = Math.min(info.getLongitude3(), info.getLongitude4());
+			minLongitude = Math.min(minLongitude12, minLongitude34);
+			
+			//提取最小的纬度
+			double minLatitude12 = Math.min(info.getLatitude1(), info.getLatitude2());
+			double minLatitude34 = Math.min(info.getLatitude3(), info.getLatitude4());
+			minLatitude = Math.min(minLatitude12, minLatitude34);
+			
+			//提取最大的经度
+			double maxLongitude12 = Math.max(info.getLongitude1(), info.getLongitude2());
+			double maxLongitude34 = Math.max(info.getLongitude3(), info.getLongitude4());
+			maxLongitude = Math.max(maxLongitude12, maxLongitude34);
+			
+			//提取最大的纬度
+			double maxLatitude12 = Math.max(info.getLatitude1(), info.getLatitude2());
+			double maxLatitude34 = Math.max(info.getLatitude3(), info.getLatitude4());
+			maxLatitude = Math.max(maxLatitude12, maxLatitude34);
+			
+			//开始判断该经纬度是否处在该区域内
+			if((longitude > minLongitude) && (longitude < maxLongitude) &&
+					(latitude > minLatitude) && (latitude < maxLatitude))
+			{
+				//返回该区域名字
+				return info.getName();
+			}
+		}
+		//如果全都找不到说明不处于某个测量的区域
+		return "未采集区域";
+	}
+	
 	private class TestLocationListener implements LocationListener
 	{
 
@@ -139,13 +188,6 @@ public class LocationService extends Service{
 
 		}
 
-	}
-	@Override
-	public void onDestroy() {
-		// TODO Auto-generated method stub
-		super.onDestroy();
-		System.out.println("LocationServer is stop");
-		
 	}
 
 	

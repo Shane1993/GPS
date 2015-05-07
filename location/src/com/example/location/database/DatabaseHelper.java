@@ -26,7 +26,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				+ "latitude1 decimal, latitude2 decimal, latitude3 decimal, latitude4 decimal )");
 		//创建个人定位表名person，有id信息，经纬度信息，速度信息，时间信息
 		db.execSQL("create table person (id integer primary key, "
-				+ "longitude decimal, latitude decimal, speed decimal, time varchar(20) )");
+				+ "longitude decimal, latitude decimal, speed decimal, time varchar(20),areaname varchar(20) )");
 	}
 
 	@Override

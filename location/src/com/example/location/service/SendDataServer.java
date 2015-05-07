@@ -33,8 +33,8 @@ public class SendDataServer extends IntentService {
 
 		System.out.println("last_LocationId :" + last_LocationId + "\nlast_AreaLocationId :" + last_AreaLocationId);
 		
-		LocationDAO locationDAO = new LocationDAO(SendDataServer.this);
-		AreaLocationDAO areaLocationDAO = new AreaLocationDAO(SendDataServer.this);
+		final LocationDAO locationDAO = new LocationDAO(SendDataServer.this);
+		final AreaLocationDAO areaLocationDAO = new AreaLocationDAO(SendDataServer.this);
 		
 		List<LocationInfo> locationList = locationDAO.getScrollData(last_LocationId, locationDAO.getMaxId()-last_LocationId);
 		List<AreaLocationInfo> areaLocationList = areaLocationDAO.getScrollData(last_AreaLocationId, areaLocationDAO.getMaxId()-last_AreaLocationId);
@@ -52,6 +52,7 @@ public class SendDataServer extends IntentService {
 				public void onSuccess() {
 					// TODO Auto-generated method stub
 					System.out.println("上传成功");
+					last_LocationId = locationDAO.getMaxId();
 				}
 				
 				@Override
@@ -62,7 +63,6 @@ public class SendDataServer extends IntentService {
 			});
 			System.out.println(locationInfo.getid() + "\n" + locationInfo.toString());
 		}
-		last_LocationId = locationDAO.getMaxId();
 		
 		for(AreaLocationInfo areaLocationInfo : areaLocationList)
 		{
@@ -72,6 +72,7 @@ public class SendDataServer extends IntentService {
 				public void onSuccess() {
 					// TODO Auto-generated method stub
 					System.out.println("上传成功");
+					last_AreaLocationId = areaLocationDAO.getMaxId();
 				}
 				
 				@Override
@@ -82,7 +83,7 @@ public class SendDataServer extends IntentService {
 			});
 			System.out.println(areaLocationInfo.getid() + "\n" + areaLocationInfo.toString());
 		}
-		last_AreaLocationId = areaLocationDAO.getMaxId();
+		
 		
 		System.out.println("last_LocationId :" + last_LocationId + "\nlast_AreaLocationId :" + last_AreaLocationId);
 		System.out.println("This is SendDataServer");

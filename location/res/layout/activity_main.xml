@@ -38,18 +38,27 @@
                         android:text="Hello, this is my location."
                         android:textAppearance="?android:attr/textAppearanceLarge" />
 
-                    <ListView
-                        android:id="@+id/locationLV"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1" >
-                    </ListView>
-
                     <LinearLayout
+                        android:layout_gravity="bottom"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical" >
 
+                        <Button 
+                            android:id="@+id/testBtn"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="TestData"
+                            />
+                        
+                        <Button 
+                            android:id="@+id/sendDataBtn"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="sendData"
+                            />
+                        
+                        
                         <Button
                             android:id="@+id/locationBtn"
                             android:layout_width="match_parent"
@@ -85,11 +94,11 @@
                             android:text="采集区域信息" />
 
                         <Button
-                            android:id="@+id/clearAreaId"
+                            android:id="@+id/refreshAreaId"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="清空所有数据" />
+                            android:text="刷新" />
                     </LinearLayout>
                 </com.example.location.AreaLocationLayout>
 
