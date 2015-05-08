@@ -12,6 +12,8 @@ import android.widget.TabHost;
 public class MainActivity extends Activity {
 
 	
+
+	
 	private TabHost tabHost;
 
 	@Override
