@@ -12,6 +12,7 @@ import com.example.location.model.LocationInfo;
 import android.app.IntentService;
 import android.content.Intent;
 import android.telephony.TelephonyManager;
+import android.widget.Toast;
 
 public class SendDataServer extends IntentService {
 
@@ -52,13 +53,14 @@ public class SendDataServer extends IntentService {
 				public void onSuccess() {
 					// TODO Auto-generated method stub
 					System.out.println("上传成功");
-					last_LocationId = locationDAO.getMaxId();
+					last_LocationId ++;
 				}
 				
 				@Override
 				public void onFailure(int arg0, String arg1) {
 					// TODO Auto-generated method stub
 					System.out.println("上传失败：" + arg1);
+					Toast.makeText(SendDataServer.this, arg1, Toast.LENGTH_SHORT).show();
 				}
 			});
 			System.out.println(locationInfo.getid() + "\n" + locationInfo.toString());
@@ -72,13 +74,15 @@ public class SendDataServer extends IntentService {
 				public void onSuccess() {
 					// TODO Auto-generated method stub
 					System.out.println("上传成功");
-					last_AreaLocationId = areaLocationDAO.getMaxId();
+					Toast.makeText(SendDataServer.this, "上传成功", Toast.LENGTH_SHORT).show();
+					last_AreaLocationId ++;
 				}
 				
 				@Override
 				public void onFailure(int arg0, String arg1) {
 					// TODO Auto-generated method stub
 					System.out.println("上传失败：" + arg1);
+					Toast.makeText(SendDataServer.this, arg1, Toast.LENGTH_SHORT).show();
 				}
 			});
 			System.out.println(areaLocationInfo.getid() + "\n" + areaLocationInfo.toString());
