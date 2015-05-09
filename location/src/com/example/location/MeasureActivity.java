@@ -7,6 +7,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.KeyEvent;
@@ -334,79 +336,72 @@ public class MeasureActivity extends Activity implements OnClickListener{
 			}
 			else
 			{
-				//有密码才能改
-				final EditText editText = new EditText(MeasureActivity.this);
-				editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-				final AlertDialog ad = new AlertDialog.Builder(MeasureActivity.this).create();
-				ad.setView(editText);
-				ad.setTitle("密码");
-				ad.setButton(DialogInterface.BUTTON_NEGATIVE, "取消", new DialogInterface.OnClickListener() {
-					
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						// TODO Auto-generated method stub
-						ad.dismiss();
-					}
-				});
-				ad.setButton(DialogInterface.BUTTON_POSITIVE, "确定", new DialogInterface.OnClickListener() {
-					
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						// TODO Auto-generated method stub
-						if(editText.getText().toString().equals(password))
-						{
-							AreaLocationDAO areaLocationDAO = new AreaLocationDAO(MeasureActivity.this);
-							//使用最新的数据
-							areaLocationInfo.setName(locationNameEt.getText().toString());
-							areaLocationInfo.setLongitude1(locationInfo1.getLongitude());
-							areaLocationInfo.setLatitude1(locationInfo1.getLatitude());
-							areaLocationInfo.setLongitude2(locationInfo2.getLongitude());
-							areaLocationInfo.setLatitude2(locationInfo2.getLatitude());
-							areaLocationInfo.setLongitude3(locationInfo3.getLongitude());
-							areaLocationInfo.setLatitude3(locationInfo3.getLatitude());
-							areaLocationInfo.setLongitude4(locationInfo4.getLongitude());
-							areaLocationInfo.setLatitude4(locationInfo4.getLatitude());
-							
-							switch (msg) {
-							//如果是0则说明现在是创建数据
-							case 0:
-								areaLocationInfo.setid(areaLocationDAO.getMaxId() + 1);
-								//将数据添加进数据库
-								areaLocationDAO.add(areaLocationInfo);
-								Toast.makeText(MeasureActivity.this, "数据添加成功", Toast.LENGTH_SHORT).show();
-								break;
-							//如果是1则说明现在是修改数据
-							case 1:
-								//更新数据库中的数据
-								areaLocationDAO.update(areaLocationInfo);
-								Toast.makeText(MeasureActivity.this, "数据修改成功", Toast.LENGTH_SHORT).show();
-								break;
-							default:
-								break;
+				//判断之前是否输入过密码
+				if(getCachePassword() == null)
+				{
+				
+					//有密码才能改
+					final EditText editText = new EditText(MeasureActivity.this);
+					editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+					final AlertDialog ad = new AlertDialog.Builder(MeasureActivity.this).create();
+					ad.setView(editText);
+					ad.setTitle("密码");
+					ad.setButton(DialogInterface.BUTTON_NEGATIVE, "取消", new DialogInterface.OnClickListener() {
+						
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							// TODO Auto-generated method stub
+							ad.dismiss();
+						}
+					});
+					ad.setButton(DialogInterface.BUTTON_POSITIVE, "确定", new DialogInterface.OnClickListener() {
+						
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							// TODO Auto-generated method stub
+							if(editText.getText().toString().equals(password))
+							{
+								//缓存密码
+								cachePassword(password);
+								
+								modifyData();
+								
+								//退出时记得注销这个Activity的接收器
+								unregisterReceiver(msgReceiver);
+								
+	//							Intent intent = new Intent(MeasureActivity.this,MainActivity.class);
+	//							//设置携带数据，为了能在确定时启动的是Mainactivity中Tab中的第二个界面
+	//							intent.putExtra("msg", 1);
+	//							startActivity(intent);
+								//跳转界面后也要把这个界面关闭掉
+								finish();
 							}
-							
-							//退出时记得注销这个Activity的接收器
-							unregisterReceiver(msgReceiver);
-							
-//							Intent intent = new Intent(MeasureActivity.this,MainActivity.class);
-//							//设置携带数据，为了能在确定时启动的是Mainactivity中Tab中的第二个界面
-//							intent.putExtra("msg", 1);
-//							startActivity(intent);
-							//跳转界面后也要把这个界面关闭掉
-							finish();
+							else
+							{
+								Toast.makeText(MeasureActivity.this, "密码错误", Toast.LENGTH_SHORT).show();
+							}
+							ad.dismiss();
 						}
-						else
-						{
-							Toast.makeText(MeasureActivity.this, "密码错误", Toast.LENGTH_SHORT).show();
-						}
-						ad.dismiss();
-					}
-				});
-				
-				ad.show();
-				
-				
-				
+					});
+					
+					ad.show();
+					
+					
+				}
+				else
+				{
+					modifyData();
+					
+					//退出时记得注销这个Activity的接收器
+					unregisterReceiver(msgReceiver);
+					
+//					Intent intent = new Intent(MeasureActivity.this,MainActivity.class);
+//					//设置携带数据，为了能在确定时启动的是Mainactivity中Tab中的第二个界面
+//					intent.putExtra("msg", 1);
+//					startActivity(intent);
+					//跳转界面后也要把这个界面关闭掉
+					finish();
+				}
 			}
 			
 			break;
@@ -494,4 +489,54 @@ public class MeasureActivity extends Activity implements OnClickListener{
 		return VALUE_ZUOSHANGTV && VALUE_YOUSHANGTV && VALUE_ZUOXIATV && VALUE_YOUXIATV;
 	}
 	
+	/**
+	 * 用来缓存密码
+	 */
+	private void cachePassword(String password)
+	{
+		Editor editor = getSharedPreferences("GPSLocation", Context.MODE_PRIVATE).edit();
+		editor.putString("password", password);
+		editor.apply();
+	}
+	
+	/**
+	 * 用来缓存密码
+	 */
+	private String getCachePassword()
+	{
+		return getSharedPreferences("GPSLocation", Context.MODE_PRIVATE).getString("password", null);
+	}
+	
+	private void modifyData()
+	{
+		AreaLocationDAO areaLocationDAO = new AreaLocationDAO(MeasureActivity.this);
+		//使用最新的数据
+		areaLocationInfo.setName(locationNameEt.getText().toString());
+		areaLocationInfo.setLongitude1(locationInfo1.getLongitude());
+		areaLocationInfo.setLatitude1(locationInfo1.getLatitude());
+		areaLocationInfo.setLongitude2(locationInfo2.getLongitude());
+		areaLocationInfo.setLatitude2(locationInfo2.getLatitude());
+		areaLocationInfo.setLongitude3(locationInfo3.getLongitude());
+		areaLocationInfo.setLatitude3(locationInfo3.getLatitude());
+		areaLocationInfo.setLongitude4(locationInfo4.getLongitude());
+		areaLocationInfo.setLatitude4(locationInfo4.getLatitude());
+		
+		switch (msg) {
+		//如果是0则说明现在是创建数据
+		case 0:
+			areaLocationInfo.setid(areaLocationDAO.getMaxId() + 1);
+			//将数据添加进数据库
+			areaLocationDAO.add(areaLocationInfo);
+			Toast.makeText(MeasureActivity.this, "数据添加成功", Toast.LENGTH_SHORT).show();
+			break;
+		//如果是1则说明现在是修改数据
+		case 1:
+			//更新数据库中的数据
+			areaLocationDAO.update(areaLocationInfo);
+			Toast.makeText(MeasureActivity.this, "数据修改成功", Toast.LENGTH_SHORT).show();
+			break;
+		default:
+			break;
+		}
+	}
 }

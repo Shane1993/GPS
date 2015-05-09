@@ -27,6 +27,7 @@ import cn.bmob.v3.listener.CloudCodeListener;
 
 import com.example.location.database.AreaLocationDAO;
 import com.example.location.model.AreaLocationInfo;
+import com.example.location.service.SendDataServer;
 
 public class AreaLocationLayout extends LinearLayout {
 
@@ -247,6 +248,9 @@ public class AreaLocationLayout extends LinearLayout {
 						areaList.clear();
 						areaAdapter.notifyDataSetChanged();
                         
+						//将数据库最大的区域ID设成0
+						SendDataServer.last_AreaLocationId = 0;
+						
                         try {
 							JSONObject jsonOject = new JSONObject(result.toString());
 							JSONArray areaArray = jsonOject.getJSONArray("results");
@@ -271,6 +275,8 @@ public class AreaLocationLayout extends LinearLayout {
 								areaLocationDAO.add(areaLocationInfo);
 								
 							}
+							
+							SendDataServer.last_AreaLocationId = areaLocationDAO.getMaxId();
 							
 							//将区域信息列在屏幕上
 							List<AreaLocationInfo> infoList = areaLocationDAO.getScrollData(0, (int)areaLocationDAO.getCount());
