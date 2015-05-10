@@ -44,20 +44,6 @@
                         android:layout_height="wrap_content"
                         android:orientation="vertical" >
 
-                        <Button 
-                            android:id="@+id/testBtn"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="TestData"
-                            />
-                        
-                        <Button 
-                            android:id="@+id/sendDataBtn"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="sendData"
-                            />
-                        
                         
                         <Button
                             android:id="@+id/locationBtn"

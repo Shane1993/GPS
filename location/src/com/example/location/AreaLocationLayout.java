@@ -146,43 +146,14 @@ public class AreaLocationLayout extends LinearLayout {
 			}
 		});
 
-		//设置清除按键点击效果
+		//设置刷新按键点击效果
 		refreshAreaBtn.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
-//				AlertDialog alertDialog = new AlertDialog.Builder(getContext(),AlertDialog.THEME_HOLO_LIGHT).create();
-//				alertDialog.setTitle("清空所有数据？");
-//				alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "取消", new DialogInterface.OnClickListener() {
-//					
-//					@Override
-//					public void onClick(DialogInterface dialog, int which) {
-//						// TODO Auto-generated method stub
-//						
-//					}
-//				});
-//				alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "是的", new DialogInterface.OnClickListener() {
-//					
-//					@Override
-//					public void onClick(DialogInterface dialog, int which) {
-//						// TODO Auto-generated method stub
-//						List<AreaLocationInfo> infoList = areaLocationDAO.getScrollData(0, (int)areaLocationDAO.getCount());
-//						//用for循环遍历列表，然后清除所有选项
-//						for(AreaLocationInfo info : infoList)
-//						{
-//							areaLocationDAO.detele(info.getid());
-//						}
-//						areaList.clear();
-//						areaAdapter.notifyDataSetChanged();
-//					}
-//				});
-//				alertDialog.show();
-				
 				
 				freshList();
 
-				
 			}
 		});
 	}
@@ -247,9 +218,6 @@ public class AreaLocationLayout extends LinearLayout {
 						}
 						areaList.clear();
 						areaAdapter.notifyDataSetChanged();
-                        
-						//将数据库最大的区域ID设成0
-						SendDataServer.last_AreaLocationId = 0;
 						
                         try {
 							JSONObject jsonOject = new JSONObject(result.toString());
@@ -270,13 +238,12 @@ public class AreaLocationLayout extends LinearLayout {
 								areaLocationInfo.setLongitude3(areaJson.getDouble("longitude3"));
 								areaLocationInfo.setLongitude4(areaJson.getDouble("longitude4"));
 								
-								areaLocationInfo.setid(areaLocationDAO.getMaxId() + 1);
+								areaLocationInfo.setid(areaJson.getInt("id"));
 								//将数据添加进数据库
 								areaLocationDAO.add(areaLocationInfo);
 								
 							}
 							
-							SendDataServer.last_AreaLocationId = areaLocationDAO.getMaxId();
 							
 							//将区域信息列在屏幕上
 							List<AreaLocationInfo> infoList = areaLocationDAO.getScrollData(0, (int)areaLocationDAO.getCount());

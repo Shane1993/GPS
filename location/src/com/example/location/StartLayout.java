@@ -86,10 +86,8 @@ public class StartLayout extends LinearLayout {
 	private void setMaxId()
 	{
 		LocationDAO locationDAO = new LocationDAO(getContext());
-		AreaLocationDAO areaLocationDAO = new AreaLocationDAO(getContext());
 		
 		SendDataServer.last_LocationId = locationDAO.getMaxId();
-		SendDataServer.last_AreaLocationId = areaLocationDAO.getMaxId();
 	}
 	
 	private Handler timerHandler = new Handler()
