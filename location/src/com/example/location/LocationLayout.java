@@ -17,6 +17,7 @@ import android.widget.ListView;
 
 import com.example.location.database.LocationDAO;
 import com.example.location.model.LocationInfo;
+import com.example.location.service.SendDataServer;
 
 public class LocationLayout extends LinearLayout {
 
@@ -72,6 +73,12 @@ public class LocationLayout extends LinearLayout {
 						{
 							locationDAO.detele(info.getid());
 						}
+						
+						/***************************************
+						//加了这句之后会有个bug？？
+						 ***************************************/
+						SendDataServer.last_LocationId = 0;
+						
 						locationList.clear();
 						locationAdapter.notifyDataSetChanged();
 					}

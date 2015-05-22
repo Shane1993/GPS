@@ -37,33 +37,64 @@ public class SendDataServer extends IntentService {
 		System.out.println("last_LocationId :" + last_LocationId );
 		System.out.println("locationDAO.getMaxId() :" + locationDAO.getMaxId());
 		
-		List<LocationInfo> locationList = locationDAO.getScrollData(last_LocationId, locationDAO.getMaxId()-last_LocationId);
+		final List<LocationInfo> locationList = locationDAO.getScrollData(last_LocationId, locationDAO.getMaxId()-last_LocationId);
 		
 		deviceId = ((TelephonyManager)getSystemService(TELEPHONY_SERVICE)).getDeviceId();
 		
-		
-		for(LocationInfo locationInfo : locationList)
-		{
-			locationInfo.setDeviceId(deviceId);
+		Thread saveThread = new Thread(){
+
+			private boolean saveOver = false;
+			private boolean saveFail = false;
+
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				super.run();
+				
+				for(LocationInfo locationInfo : locationList)
+				{
+					locationInfo.setDeviceId(deviceId);
+					
+					saveOver = false;
+					
+					locationInfo.save(SendDataServer.this,new SaveListener() {
+						
+						@Override
+						public void onSuccess() {
+							// TODO Auto-generated method stub
+							System.out.println("上传成功");
+							last_LocationId ++;
+							System.out.println("last_LocationId :" + last_LocationId );
+							
+							saveOver = true;
+						}
+						
+						@Override
+						public void onFailure(int arg0, String arg1) {
+							// TODO Auto-generated method stub
+							System.out.println("上传失败：" + arg1);
+							Toast.makeText(SendDataServer.this, arg1, Toast.LENGTH_SHORT).show();
+							saveOver = true;
+							saveFail = true;
+						}
+					});
+					System.out.println(locationInfo.getid() + "\n" + locationInfo.toString());
+					
+					while(!saveOver);
+					
+					if(saveFail)
+					{
+						break;
+					}
+					
+				}
+				
+				return;
+			}
 			
-			locationInfo.save(SendDataServer.this,new SaveListener() {
-				
-				@Override
-				public void onSuccess() {
-					// TODO Auto-generated method stub
-					System.out.println("上传成功");
-					last_LocationId ++;
-				}
-				
-				@Override
-				public void onFailure(int arg0, String arg1) {
-					// TODO Auto-generated method stub
-					System.out.println("上传失败：" + arg1);
-					Toast.makeText(SendDataServer.this, arg1, Toast.LENGTH_SHORT).show();
-				}
-			});
-			System.out.println(locationInfo.getid() + "\n" + locationInfo.toString());
-		}
+		};
+		saveThread.start();
+		
 		
 		/**
 		 * 将上传区域信息的工作直接搬移到创建的那个时候这样就避免了还没上传数据库就被刷新的问题
@@ -89,9 +120,6 @@ public class SendDataServer extends IntentService {
 //			});
 //			System.out.println("last_AreaLocationId :" + areaLocationInfo.getid() + "\n" + areaLocationInfo.toString());
 //		}
-		
-		System.out.println("last_LocationId :" + last_LocationId );
-		System.out.println("locationDAO.getMaxId() :" + locationDAO.getMaxId() );
 		
 		System.out.println("This is SendDataServer");
 	}
